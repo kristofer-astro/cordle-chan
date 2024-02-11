@@ -1,4 +1,5 @@
-# wordle
-New York Times' game ["Wordle"](https://www.nytimes.com/games/wordle/index.html) coded in python
+# Cordle-chan.py
+New York Times' game [Wordle](https://www.nytimes.com/games/wordle/index.html) implemented in a Discord bot
 
-Might also make hard mode some time later in the future :3
+More upcoming features coming soon!
+- Hard mode
