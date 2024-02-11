@@ -9,7 +9,7 @@ from random import randrange
 from time import sleep
 
 # Load TOKEN
-TOKEN = 'MTIwNTkxODIwMjQ0MjI5MzMxOA.GQP2bR.S9STzWcHV5zEzTOWFjUnzZsfxSBvBsNmzU0r2o' # insert token here
+TOKEN = '' # insert token here
 
 # BOT SETUP
 intents = Intents.default()
@@ -24,6 +24,8 @@ cordle.remove_command('help')
 async def ping(interaction: nextcord.Interaction):
     await interaction.response.send_message(f'Pong :ping_pong:: {round(cordle.latency * 1000)} ms ')
 
+
+
 @cordle.slash_command(name='help', description='List of commands')
 async def help(interaction: nextcord.Interaction):
 
@@ -36,7 +38,8 @@ async def help(interaction: nextcord.Interaction):
     help_embed.add_field(name=':wrench: Utility Commands', value='`/help` - Displays this message \n'
                                                                  '`/ping` - Returns the latency of the bot',
                          inline=False)
-    help_embed.add_field(name=':jigsaw: Wordle Commands', value='`/wordle` - Initiates a Wordle game \n'
+    help_embed.add_field(name=':jigsaw: Wordle Commands', value='`/tutorial` - Displays how to play Wordle\n'
+                                                                '`/wordle` - Initiates a Wordle game \n'
                                                                 '`>input (word)` - Guessing a word for the puzzle',
                          inline=False)
     help_embed.add_field(name=':bulb: More Features Coming Soon!', value='', inline=False)
@@ -51,7 +54,37 @@ async def help(interaction: nextcord.Interaction):
 
 logo = 'https://static01.nyt.com/images/2022/03/02/crosswords/alpha-wordle-icon-new/alpha-wordle-icon-new-square320-v3.png'
 
+@cordle.slash_command(name='tutorial', description='Wordle rules and how to play!')
+async def tutorial(interaction: nextcord.Interaction):
+    tuto_embed = nextcord.Embed(
+        title='Welcome to Wordle!',
+        color=nextcord.Color.brand_green()
+    )
 
+    tuto_embed.add_field(name=':question: What is Wordle?',
+                         value='Wordle is a *word-based puzzle game* that asks you to guess a 5-letter word. You are '
+                               'given **6 attempts** to guess the mystery word!\n\nThere will also be clues that will '
+                               'guide you through the puzzle!\n\n',
+                         inline=False)
+
+    tuto_embed.add_field(name=':question: What do the colors of the blocks mean?',
+                         value='🟩 A green block means that the current letter of the word is **CORRECT** and'
+                               'is in the **RIGHT** position!\n\n🟨 A yellow block means that the current'
+                               'letter **EXISTS** within the word, it\'s just *not in the right* position!\n\n'
+                               '⬜ A white block means that the current letter does **NOT** exist within'
+                               'the word.\n\n',
+                         inline=False)
+    tuto_embed.add_field(name=':bulb: More info regarding duplicate letters',
+                         value='At times, there might be words that have duplicate letters; e.g "TEETH" and "AORTA"\n\n'
+                               'Worry not! as Wordle do take account of the letter counts in the words. This means that'
+                               'if say the mystery word is "TEETH", and you inputted "EATEN" as a guess, then both E\'s'
+                               'will be highlighted yellow, indicating that there are 2 E\'s in the mystery word.\n\n'
+                               'It works the other way around, too! e.g Inputting "MELEE" as a guess for "SPEED" will'
+                               'have the first 2 E\'s highlighted, ignoring the third E in MELEE.',
+                         inline=False)
+    tuto_embed.set_thumbnail(url=logo)
+
+    await interaction.response.send_message(embed=tuto_embed)
 
 # initializing global variables
 player = ''
@@ -64,6 +97,7 @@ white = ':white_large_square:'
 green = ':green_square:'
 yellow = ':yellow_square:'
 mystery_word = ''
+
 
 @cordle.slash_command(name='wordle', description='Play Wordle game on Discord!', dm_permission=True)
 async def wordle(interaction: nextcord.Interaction):
@@ -220,29 +254,6 @@ async def exit_game(ctx):
     else:
         await ctx.send('There is no game currently running!')
 
-@cordle.slash_command(name='tuto', description='Wordle rules and how to play!')
-async def tuto(interaction: nextcord.Interaction):
-    tuto_embed = nextcord.Embed(
-        title='Welcome to Wordle!',
-        color=nextcord.Color.brand_green()
-    )
-
-    tuto_embed.add_field(name=':question: What is Wordle?',
-                         value='Wordle is a word-based puzzle game that asks you to guess a 5-letter word. You are '
-                               'given 6 attempts to guess the mystery word!\n\nThere will also be clues that will '
-                               'guide you through the puzzle!',
-                         inline=False)
-
-    tuto_embed.add_field(name=':question: What do the colors of the blocks mean?',
-                         value='`:green_square:` A green block means that the current letter of the word is CORRECT and'
-                               'is in the RIGHT position!\n`:yellow_square` A yellow block means that the current'
-                               'letter EXISTS within the word, it\'s just not in the right position!\n'
-                               '`:white_large_square` A white block means that the current letter does NOT exist within'
-                               'the word.')
-    tuto_embed.set_thumbnail(url=logo)
-
-    await interaction.response.send_message(embed=tuto_embed)
-
 '''
 =================================================== WORDLE GAME ========================================================
 '''
@@ -273,15 +284,11 @@ cordle.run(token=TOKEN)
 FEATURES TO BE ADDED
 
 - EMBEDS EMBEDS EMBEDS
-- PING COMMAND
+- ✅ PING COMMAND
 - WORDLE PRINTABLE EMBED INSTANT THEN CURRENT ATTEMPT PRINT BLOCK BY BLOCK EDIT WITH TIME DELAY?
 - RNG THINGS
-- END GAME EARLY FEATURE
-
-
-
-
-
+- ✅ END GAME EARLY FEATURE
+- WORDLE HARD MODE 👹
 
 ========================================================================================================================
 '''

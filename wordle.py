@@ -52,7 +52,7 @@ def wordle() -> bool:
     correct_letters = 0
 
     # debug
-    # mystery_word = 'spell'
+    mystery_word = 'speed'
 
     # returns a dict of each letter count in the word
     guess_letter_count = count_letters(guess)
