@@ -51,28 +51,7 @@ async def help(interaction: nextcord.Interaction):
 
 logo = 'https://static01.nyt.com/images/2022/03/02/crosswords/alpha-wordle-icon-new/alpha-wordle-icon-new-square320-v3.png'
 
-@cordle.slash_command(name='tutorial', description='Wordle rules and how to play!')
-async def tutorial(interaction: nextcord.Interaction):
-    tuto_embed = nextcord.Embed(
-        title='Welcome to Wordle!',
-        color=nextcord.Color.brand_green()
-    )
 
-    tuto_embed.add_field(name=':question: What is Wordle?',
-                         value='Wordle is a word-based puzzle game that asks you to guess a 5-letter word. You are '
-                               'given 6 attempts to guess the mystery word!\n\nThere will also be clues that will '
-                               'guide you through the puzzle!',
-                         inline=False)
-
-    tuto_embed.add_field(name=':question: What do the colors of the blocks mean?',
-                         value='`:green_square:` A green block means that the current letter of the word is CORRECT and'
-                               'is in the RIGHT position!\n`:yellow_square` A yellow block means that the current'
-                               'letter EXISTS within the word, it\'s just not in the right position!\n'
-                               '`:white_large_square` A white block means that the current letter does NOT exist within'
-                               'the word.')
-    tuto_embed.set_thumbnail(url=logo)
-
-    await interaction.response.send_message(embed=tuto_embed)
 
 # initializing global variables
 player = ''
@@ -240,6 +219,29 @@ async def exit_game(ctx):
         await ctx.send(f'You have forcibly end the game! The answer is {mystery_word}!')
     else:
         await ctx.send('There is no game currently running!')
+
+@cordle.slash_command(name='tuto', description='Wordle rules and how to play!')
+async def tuto(interaction: nextcord.Interaction):
+    tuto_embed = nextcord.Embed(
+        title='Welcome to Wordle!',
+        color=nextcord.Color.brand_green()
+    )
+
+    tuto_embed.add_field(name=':question: What is Wordle?',
+                         value='Wordle is a word-based puzzle game that asks you to guess a 5-letter word. You are '
+                               'given 6 attempts to guess the mystery word!\n\nThere will also be clues that will '
+                               'guide you through the puzzle!',
+                         inline=False)
+
+    tuto_embed.add_field(name=':question: What do the colors of the blocks mean?',
+                         value='`:green_square:` A green block means that the current letter of the word is CORRECT and'
+                               'is in the RIGHT position!\n`:yellow_square` A yellow block means that the current'
+                               'letter EXISTS within the word, it\'s just not in the right position!\n'
+                               '`:white_large_square` A white block means that the current letter does NOT exist within'
+                               'the word.')
+    tuto_embed.set_thumbnail(url=logo)
+
+    await interaction.response.send_message(embed=tuto_embed)
 
 '''
 =================================================== WORDLE GAME ========================================================
