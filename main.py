@@ -9,7 +9,7 @@ from random import randrange
 from time import sleep
 
 # Load TOKEN
-TOKEN = '' # insert token here
+TOKEN = 'MTIwNTkxODIwMjQ0MjI5MzMxOA.GQP2bR.S9STzWcHV5zEzTOWFjUnzZsfxSBvBsNmzU0r2o' # insert token here
 
 # BOT SETUP
 intents = Intents.default()
@@ -49,11 +49,37 @@ async def help(interaction: nextcord.Interaction):
 =================================================== WORDLE GAME ========================================================
 '''
 
+logo = 'https://static01.nyt.com/images/2022/03/02/crosswords/alpha-wordle-icon-new/alpha-wordle-icon-new-square320-v3.png'
+
+@cordle.slash_command(name='tutorial', description='Wordle rules and how to play!')
+async def tutorial(interaction: nextcord.Interaction):
+    tuto_embed = nextcord.Embed(
+        title='Welcome to Wordle!',
+        color=nextcord.Color.brand_green()
+    )
+
+    tuto_embed.add_field(name=':question: What is Wordle?',
+                         value='Wordle is a word-based puzzle game that asks you to guess a 5-letter word. You are '
+                               'given 6 attempts to guess the mystery word!\n\nThere will also be clues that will '
+                               'guide you through the puzzle!',
+                         inline=False)
+
+    tuto_embed.add_field(name=':question: What do the colors of the blocks mean?',
+                         value='`:green_square:` A green block means that the current letter of the word is CORRECT and'
+                               'is in the RIGHT position!\n`:yellow_square` A yellow block means that the current'
+                               'letter EXISTS within the word, it\'s just not in the right position!\n'
+                               '`:white_large_square` A white block means that the current letter does NOT exist within'
+                               'the word.')
+    tuto_embed.set_thumbnail(url=logo)
+
+    await interaction.response.send_message(embed=tuto_embed)
+
 # initializing global variables
 player = ''
 game_over = True
 is_solved = False
-all_printable = []
+wordle_embed = nextcord.Embed(title='Wordle', color=nextcord.Color.green())
+wordle_embed.set_thumbnail(url=logo)
 attempts = 0
 white = ':white_large_square:'
 green = ':green_square:'
@@ -89,7 +115,7 @@ async def wordle(interaction: nextcord.Interaction):
 
 @cordle.command(name='input')
 async def wordle_input(ctx, guess : str):
-    global player, game_over, all_printable, attempts, mystery_word, white, green, yellow, is_solved
+    global player, game_over, wordle_embed, attempts, mystery_word, white, green, yellow, is_solved
 
     # checks if a game is currently running or not
     if not game_over:
@@ -112,10 +138,12 @@ async def wordle_input(ctx, guess : str):
 
             # IF INPUT IS VALID, STARTS AN ATTEMPT
             if len(guess) == 5 and guess in wordle_possible:
-                await ctx.send(f'Your input "{guess}" is VALID !')
+                attempts += 1
+                # await ctx.send(f'Your input "{guess}" is VALID !')
+                await ctx.send(f'**Attempt {attempts} / 6**')
 
-                attempt_printable = [f'`  {guess[0].upper()}     {guess[1].upper()}      {guess[2].upper()}      '
-                                 f'{guess[3].upper()}     {guess[4].upper()}  `'] # List to store current wordle output (printed block by block)
+                attempt_printable = (f'`{guess[0].upper()}  {guess[1].upper()}  {guess[2].upper()}  '
+                                     f'{guess[3].upper()}  {guess[4].upper()}`') # String to store current guess word
                 green_list = []
                 block_printable = ''
                 correct_letters = 0
@@ -174,34 +202,24 @@ async def wordle_input(ctx, guess : str):
                     if correct_letters == 5:
                         is_solved = True
 
-                # APPENDING OUTPUT TO CURRENT ATTEMPT OUTCOME
-                attempt_printable.append(block_printable)
 
                 # PRINTING THE MAIN OUTPUT
+                wordle_embed.add_field(name='', value=f'{attempt_printable}\n{block_printable}\n',inline=False)
+                wordle_embed.set_footer(text=f'{"❤️" * (6 - attempts)}')
+                await ctx.send(embed=wordle_embed)
 
-                for attempt in all_printable:
-                    await ctx.send(attempt)
-
-                await ctx.send(attempt_printable[0])
-                await ctx.send(attempt_printable[1])    # can be improved(?) add delay for every block printed -> edit message
-
-
-                # END OF AN ATTEMPT
-                attempts += 1;
-                all_printable.append(attempt_printable[0])
-                all_printable.append(attempt_printable[1])
 
                 # CHECKS IF PUZZLE IS SOLVED OR USER FINISHES THEIR 6TH ATTEMPT BUT NOT SOLVED -> ENDS THE GAME
                 if is_solved:
                     await ctx.send('Congratulations!! 🎉🎉🎉 You have guessed the right word 🙂')
                     game_over = True
-                    all_printable = []
+                    wordle_embed.clear_fields()
                     attempts = 0
 
                 if attempts == 6 and not is_solved:
                     await ctx.send(f'The correct answer is {mystery_word}!')
                     game_over = True
-                    all_printable = []
+                    wordle_embed.clear_fields()
                     attempts = 0
 
         else:
@@ -212,11 +230,11 @@ async def wordle_input(ctx, guess : str):
 
 @cordle.command(name='exit')
 async def exit_game(ctx):
-    global game_over, all_printable, attempts, mystery_word
+    global game_over, wordle_embed, attempts, mystery_word
 
     if not game_over:
         game_over = True
-        all_printable = []
+        wordle_embed.clear_fields()
         attempts = 0
 
         await ctx.send(f'You have forcibly end the game! The answer is {mystery_word}!')
