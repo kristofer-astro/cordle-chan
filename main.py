@@ -9,7 +9,7 @@ from random import randrange
 from time import sleep
 
 # Load TOKEN
-TOKEN = ''
+TOKEN = '' # insert token here
 
 # BOT SETUP
 intents = Intents.default()
